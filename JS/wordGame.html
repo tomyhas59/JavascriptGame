@@ -24,10 +24,7 @@
 
       const onClickButton = () => {
         if (number) {
-          if (
-            !word ||
-            (word[word.length - 1] === newWord[0] && newWord.length === 3)
-          ) {
+          if (!word ||(word[word.length - 1] === newWord[0] && newWord.length === 3)) {
             word = newWord;
             $word.textContent = word;
             const order = Number($order.textContent);
