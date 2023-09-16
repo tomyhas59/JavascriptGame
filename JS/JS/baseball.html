@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="form">
+      <input type="text" id="input" />
+      <button>확인</button>
+    </form>
+    <div id="logs"></div>
+    <script>
+      const $input = document.querySelector("#input");
+      const $form = document.querySelector("#form");
+      const $logs = document.querySelector("#logs");
+
+      const numbers = [];
+      for (let n = 0; n < 9; n += 1) {
+        numbers.push(n + 1);
+      }
+
+      const answer = [];
+      for (let n = 0; n <= 3; n += 1) {
+        const index = Math.floor(Math.random() * numbers.length); //0~8 정수
+        answer.push(numbers[index]);
+        numbers.splice(index, 1);
+      }
+
+      const tries = [];
+      const checkInput = (input) => {
+        if (input.length !== 4) {
+          return;
+          alert("4자리 숫자를 입력해 주세요");
+        }
+        if (new Set(input).size !== 4) {
+          return;
+          alert("숫자가 중복되었습니다");
+        }
+        if (tries.includes(input)) {
+          return;
+          alert("이미 시도한 값입니다");
+        }
+        return true;
+      };
+
+      const onSubmit = (e) => {
+        e.preventDefault();
+        const value = $input.value;
+        $input.value = "";
+        const valid = checkInput(value);
+        if (!valid) {
+          return;
+        }
+        if (value === answer.join("")) {
+          $logs.textContent = "홈런!";
+          return;
+        }
+        if (tries.length >= 9) {
+          const mesaage = document.createTextNode(
+            `패배! 정답은 ${answer.join("")}`
+          );
+          //document.createElement("br") 줄바꿈
+          //$logs.innerHTML = $logs.textContent + "<br/>"
+          $logs.appendChild(mesaage);
+          return;
+        }
+        tries.push(value);
+      };
+
+      $form.addEventListener("submit", onSubmit());
+    </script>
+  </body>
+</html>
