@@ -27,20 +27,23 @@
         answer.push(numbers[index]);
         numbers.splice(index, 1);
       }
+      console.log(answer);
 
       const tries = [];
+      const outNumber = [];
+
       const checkInput = (input) => {
         if (input.length !== 4) {
-          return;
           alert("4자리 숫자를 입력해 주세요");
+          return;
         }
         if (new Set(input).size !== 4) {
-          return;
           alert("숫자가 중복되었습니다");
+          return;
         }
         if (tries.includes(input)) {
-          return;
           alert("이미 시도한 값입니다");
+          return;
         }
         return true;
       };
@@ -66,10 +69,40 @@
           $logs.appendChild(mesaage);
           return;
         }
+        if (outNumber.length >= 2) {
+          const mesaage = document.createTextNode(
+            `패배! 정답은 ${answer.join("")}`
+          );
+          $logs.append(`아웃`, document.createElement("br"), mesaage);
+          return;
+        }
+        let strike = 0;
+        let ball = 0;
+
+        for (let i = 0; i < answer.length; i++) {
+          const index = value.indexOf(answer[i]);
+          if (index > -1) {
+            if (index === i) {
+              strike += 1;
+            } else {
+              ball += 1;
+            }
+          }
+        }
+        strike === 0 && ball === 0
+          ? $logs.append(`아웃`, document.createElement("br"))
+          : $logs.append(
+              `${value}:${strike}스트라이크 ${ball}볼`,
+              document.createElement("br")
+            );
+
+        if (strike === 0 && ball === 0) {
+          outNumber.push(value);
+        }
         tries.push(value);
       };
 
-      $form.addEventListener("submit", onSubmit());
+      $form.addEventListener("submit", (e) => onSubmit(e));
     </script>
   </body>
 </html>
