@@ -36,20 +36,62 @@
         paper: "-440px",
       };
 
-      let choice = "scissors";
+      let computerChoice = "scissors";
 
       const changeComuterHand = () => {
-        if (choice === "scissors") {
-          choice = "rock";
-        } else if (choice === "rock") {
-          choice = "paper";
+        if (computerChoice === "scissors") {
+          computerChoice = "rock";
+        } else if (computerChoice === "rock") {
+          computerChoice = "paper";
         } else {
-          choice = "scissors";
+          computerChoice = "scissors";
         }
-        $computer.style.background = `url(${IMG_URL}) ${rspX[choice]} 0`;
+        $computer.style.background = `url(${IMG_URL}) ${rspX[computerChoice]} 0`;
         $computer.style.backgroundSize = "auto 200px";
       };
-      setInterval(changeComuterHand, 50);
+      //setInterval은 변수로 저장해서 실행
+      let intervalId = setInterval(changeComuterHand, 50);
+
+      const scoreTable = {
+        rock: 0,
+        scissors: 1,
+        paper: -1,
+      };
+
+      let score = 0;
+      const clickButton = () => {
+        clearInterval(intervalId);
+        const myChoice =
+          event.target.id === "rock"
+            ? "rock"
+            : event.target.id === "scissors"
+            ? "scissors"
+            : "paper";
+        const myScore = scoreTable[myChoice];
+        const computerScore = scoreTable[computerChoice];
+        const diff = myScore - computerScore;
+
+        let message;
+        //2, -1은 승리 조건, 점수표 참고
+        if ([2, -1].includes(diff) /* || 대체 가능*/) {
+          score += 1;
+          message = "승리";
+        } else if (diff === -2 || diff === 1) {
+          score -= 1;
+          message = "패배";
+        } else {
+          message = "무승부";
+        }
+        $score.textContent = `${message} 총 : ${score}점`;
+        setTimeout(() => {
+          clearInterval(intervalId);
+          intervalId = setInterval(changeComuterHand, 50);
+        }, 1000);
+      };
+
+      $scissors.addEventListener("click", clickButton);
+      $rock.addEventListener("click", clickButton);
+      $paper.addEventListener("click", clickButton);
     </script>
   </body>
 </html>
