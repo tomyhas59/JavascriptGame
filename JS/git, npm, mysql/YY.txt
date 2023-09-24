@@ -1,0 +1,55 @@
+npx create-react-app client
+npx create-react-app type --template typescript
+npm i next, npx create-next-app client
+npm i -g ts-node
+parseInt : 숫자열로 바꿈
+---------------------------------------------------------------------------
+const Enter = useCallback((e, "매개변수") => {
+    if (e.key === "Enter") {
+      "함수'("매개변수");
+    }
+  }, []);
+
+  onKeyUp={(e) => Enter(e, "매개변수")}
+--------------------------------------------------------------------------
+react virtualized: 데이터 보이는 것만 보이게 (용량 절약)
+---------------------------------------------------------------------------
+npm i @fortawesome/fontawesome-svg-core @fortawesome/free-brands-svg-icons @fortawesome/free-regular-svg-icons @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
+------------------------------------------------------------------------
+npm 설치 안 될 때 
+
+npm cache clear --force
+------------------------------------------------------------------------
+npm i redux react-redux redux-saga redux-devtools-extension redux-logger
+npm i @reduxjs/toolkit redux-thunk (saga 같은 거)
+------------------------------------------------------------------------
+npm i react-router-dom
+-------------------------java-----------------------------------------------
+npm i -D prettier eslint eslint-plugin-prettier eslint-config-prettier
+-------------------------type-----------------------------------------------
+npm i -D @typescript-eslint/eslint-plugin @typescript-eslint/parser
+--------------------------------------------------------------------------
+npm i eslint eslint-plugin-import eslint-plugin-react eslint-plugin-react-hooks
+npm i -D babel-eslint eslint-config-airbnb eslint-plugin-import
+npm  babel-plugin-styled-components  cs SSR
+npm i -D eslint-plugin-jsx-a11y
+-----------------------------------------------------------------------
+mysql 오류 날 때 services.msc
+----------------------------------------------------------------------
+--legacy-peer-deps
+----------------------------------------------------------------------
+npm i express mysql2 sequelize sequelize-cli dotenv
+-----------------------------------------------------------------------
+npm cache verify
+----------------------------------------------------------------------
+npm i styled-components antd @ant-design/icons @types/styled-components
+---------------------------------------------------------------------
+npm i  immer 불변성 (...state 이런 거 편리하게)
+npm i -D @faker-js/faker
+----------------------------------------------------------------------
+get, load 간단하게 해줌 npm i swr
+---------------------------------------------------------------------
+npm i cookie-parser jsonwebtoken express-session
+----------------------------------------------------------------------
+웹팩 설치 파일
+npm i -D @babel/core @babel/preset-env @babel/preset-react babel-loader clean-webpack-plugin css-loader html-loader html-webpack-plugin mini-css-extract-plugin node-sass react react-dom sass-loader style-loader webpack webpack-cli webpack-dev-server
