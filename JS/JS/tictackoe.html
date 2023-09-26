@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+
+      td {
+        border: 1px solid;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      const { body } = document;
+
+      const $table = document.createElement("table");
+      const $result = document.createElement("result");
+      const rows = [];
+      let turn = "O";
+
+      for (let i = 0; i < 3; i++) {
+        const $tr = document.createElement("tr");
+        $table.append($tr);
+        const cells = [];
+
+        for (let j = 0; j < 3; j++) {
+          const $td = document.createElement("td");
+          $tr.append($td);
+          cells.push($td);
+          $td.addEventListener("click", (e) => {
+            if (e.target.textContent) return;
+            e.target.textContent = turn;
+            if (turn === "O") {
+              turn = "X";
+            } else if (turn === "X") {
+              turn = "O";
+            }
+          });
+          rows.push(cells);
+        }
+      }
+      body.append($table);
+      body.append($result);
+    </script>
+  </body>
+</html>
