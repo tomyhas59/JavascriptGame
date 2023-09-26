@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    #computer {
+      width: 142px;
+      height: 200px;
+    }
+  </style>
+  <body>
+    <div id="computer"></div>
+    <div>
+      <button id="scissors" class="btn">가위</button>
+      <button id="rock" class="btn">바위</button>
+      <button id="paper" class="btn">보</button>
+    </div>
+    <div id="score">0</div>
+    <script>
+      const $computer = document.querySelector("#computer");
+      const $scissors = document.querySelector("#scissors");
+      const $rock = document.querySelector("#rock");
+      const $paper = document.querySelector("#paper");
+      const $score = document.querySelector("#score");
+      const IMG_URL = "./rsp.png";
+
+      $computer.style.background = `url(${IMG_URL}) 0 0`; //가위
+      $computer.style.backgroundSize = "auto 200px";
+
+      const rspX = {
+        scissors: "0",
+        rock: "-220px",
+        paper: "-440px",
+      };
+
+      let computerChoice = "scissors";
+
+      const changeComuterHand = () => {
+        if (computerChoice === "scissors") {
+          computerChoice = "rock";
+        } else if (computerChoice === "rock") {
+          computerChoice = "paper";
+        } else {
+          computerChoice = "scissors";
+        }
+        $computer.style.background = `url(${IMG_URL}) ${rspX[computerChoice]} 0`;
+        $computer.style.backgroundSize = "auto 200px";
+      };
+      //setInterval은 변수로 저장해서 실행
+      let intervalId = setInterval(changeComuterHand, 50);
+
+      const scoreTable = {
+        rock: 0,
+        scissors: 1,
+        paper: -1,
+      };
+
+      let score = 0;
+      const clickButton = () => {
+        clearInterval(intervalId);
+        const myChoice =
+          event.target.id === "rock"
+            ? "rock"
+            : event.target.id === "scissors"
+            ? "scissors"
+            : "paper";
+        const myScore = scoreTable[myChoice];
+        const computerScore = scoreTable[computerChoice];
+        const diff = myScore - computerScore;
+
+        let message;
+        //2, -1은 승리 조건, 점수표 참고
+        if ([2, -1].includes(diff) /* || 대체 가능*/) {
+          score += 1;
+          message = "승리";
+        } else if (diff === -2 || diff === 1) {
+          score -= 1;
+          message = "패배";
+        } else {
+          message = "무승부";
+        }
+        $score.textContent = `${message} 총 : ${score}점`;
+        setTimeout(() => {
+          clearInterval(intervalId);
+          intervalId = setInterval(changeComuterHand, 50);
+        }, 1000);
+      };
+
+      $scissors.addEventListener("click", clickButton);
+      $rock.addEventListener("click", clickButton);
+      $paper.addEventListener("click", clickButton);
+    </script>
+  </body>
+</html>
