@@ -6,121 +6,127 @@
     <title>Document</title>
   </head>
   <style>
-  .out{
-    color: red;
-  }</style>
+    .out {
+      color: red;
+    }
+  </style>
   <body>
     <form id="form">
       <input type="text" id="input" />
       <button>확인</button>
     </form>
-    
+
     <div id="logs"></div>
     <script>
-    const $input = document.querySelector("#input");
-const $form = document.querySelector("#form");
-const $logs = document.querySelector("#logs");
+      const $input = document.querySelector("#input");
+      const $form = document.querySelector("#form");
+      const $logs = document.querySelector("#logs");
 
-const numbers = [];
-for (let n = 0; n < 9; n += 1) {
-  numbers.push(n + 1);
-}
-
-const answer = [];
-for (let n = 0; n <= 3; n += 1) {
-  const index = Math.floor(Math.random() * numbers.length); // 0~8 정수
-  answer.push(numbers[index]);
-  numbers.splice(index, 1);
-}
-console.log(answer);
-
-const tries = [];
-const outNumber = [];
-let outCount = 0; // 아웃 횟수를 세는 변수 추가
-
-const checkInput = (input) => {
-  if (input.length !== 4) {
-    alert("4자리 숫자를 입력해 주세요");
-    return;
-  }
-  if (new Set(input).size !== 4) {
-    alert("숫자가 중복되었습니다");
-    return;
-  }
-  if (tries.includes(input)) {
-    alert("이미 시도한 값입니다");
-    return;
-  }
-  return true;
-};
-
-const onSubmit = (e) => {
-  e.preventDefault();
-    if ($logs.textContent.includes("홈") || $logs.textContent.includes("패")) {
-    alert("더 이상 시도할 수 없습니다");
-    return;
-  }
-  
-  const value = $input.value;
-  $input.value = "";
-  const valid = checkInput(value);
-  if (!valid) {
-    return;
-  }
-  if (value === answer.join("")) {
-    $logs.textContent = "홈런!";
-    return;
-  }
-  if (tries.length >= 9) {
-    const message = document.createTextNode(
-      `패배! 정답은 ${answer.join("")}`
-    );
-    $logs.appendChild(message);
-    return;
-  }
-  if (outNumber.length >= 2) {
-    const message = document.createTextNode(
-      `패배! 정답은 ${answer.join("")}`
-    );
-    $logs.append(`${outCount +1}아웃`, document.createElement("br"), message);
-    return;
-  }
-  let strike = 0;
-  let ball = 0;
-
-  for (let i = 0; i < answer.length; i++) {
-    const index = value.indexOf(answer[i]);
-    if (index > -1) {
-      if (index === i) {
-        strike += 1;
-      } else {
-        ball += 1;
+      const numbers = [];
+      for (let n = 0; n < 9; n += 1) {
+        numbers.push(n + 1);
       }
-    }
-  }
 
-  if (strike === 0 && ball === 0) {
-    outNumber.push(value);
-    outCount++; // 아웃 횟수 증가
-     $input.focus();
-  }
+      const answer = [];
+      for (let n = 0; n <= 3; n += 1) {
+        const index = Math.floor(Math.random() * numbers.length); // 0~8 정수
+        answer.push(numbers[index]);
+        numbers.splice(index, 1);
+      }
+      console.log(answer);
 
-  // 아웃일 때 아웃 횟수 표시
-  if (strike === 0 && ball === 0) {
-    $logs.append(`${outCount}아웃`, document.createElement("br"));
-  } else {
-    $logs.append(
-      `${value}:${strike}스트라이크 ${ball}볼`,
-      document.createElement("br")
-    );
-  }
-  tries.push(value);
-   $input.focus();
+      const tries = [];
+      const outNumber = [];
+      let outCount = 0; // 아웃 횟수를 세는 변수 추가
 
-};
+      const checkInput = (input) => {
+        if (input.length !== 4) {
+          alert("4자리 숫자를 입력해 주세요");
+          return;
+        }
+        if (new Set(input).size !== 4) {
+          alert("숫자가 중복되었습니다");
+          return;
+        }
+        if (tries.includes(input)) {
+          alert("이미 시도한 값입니다");
+          return;
+        }
+        return true;
+      };
 
-$form.addEventListener("submit", (e) => onSubmit(e));
+      const onSubmit = (e) => {
+        e.preventDefault();
+        if (
+          $logs.textContent.includes("홈") ||
+          $logs.textContent.includes("패")
+        ) {
+          $form.removeEventListener("submit", (e) => onSubmit(e));
+          return;
+        }
 
+        const value = $input.value;
+        $input.value = "";
+        const valid = checkInput(value);
+        if (!valid) {
+          return;
+        }
+        if (value === answer.join("")) {
+          $logs.textContent = "홈런!";
+          return;
+        }
+        if (tries.length >= 9) {
+          const message = document.createTextNode(
+            `패배! 정답은 ${answer.join("")}`
+          );
+          $logs.appendChild(message);
+          return;
+        }
+        if (outNumber.length >= 2) {
+          const message = document.createTextNode(
+            `패배! 정답은 ${answer.join("")}`
+          );
+          $logs.append(
+            `${outCount + 1}아웃`,
+            document.createElement("br"),
+            message
+          );
+          return;
+        }
+        let strike = 0;
+        let ball = 0;
+
+        for (let i = 0; i < answer.length; i++) {
+          const index = value.indexOf(answer[i]);
+          if (index > -1) {
+            if (index === i) {
+              strike += 1;
+            } else {
+              ball += 1;
+            }
+          }
+        }
+
+        if (strike === 0 && ball === 0) {
+          outNumber.push(value);
+          outCount++; // 아웃 횟수 증가
+          $input.focus();
+        }
+
+        // 아웃일 때 아웃 횟수 표시
+        if (strike === 0 && ball === 0) {
+          $logs.append(`${outCount}아웃`, document.createElement("br"));
+        } else {
+          $logs.append(
+            `${value}:${strike}스트라이크 ${ball}볼`,
+            document.createElement("br")
+          );
+        }
+        tries.push(value);
+        $input.focus();
+      };
+
+      $form.addEventListener("submit", (e) => onSubmit(e));
     </script>
   </body>
 </html>

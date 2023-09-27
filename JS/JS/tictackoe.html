@@ -26,27 +26,93 @@
       const rows = [];
       let turn = "O";
 
+      const checkWinner = (target) => {
+        let rowIndex;
+        let cellIndex;
+        rows.forEach((row, ri) => {
+          row.forEach((cell, ci) => {
+            if (cell === target) {
+              rowIndex = ri;
+              cellIndex = ci;
+            }
+          });
+        });
+        let hasWinner = false;
+        if (
+          rows[rowIndex][0].textContent === turn &&
+          rows[rowIndex][1].textContent === turn &&
+          rows[rowIndex][2].textContent === turn
+        ) {
+          hasWinner = true;
+        }
+        if (
+          rows[0][cellIndex].textContent === turn &&
+          rows[1][cellIndex].textContent === turn &&
+          rows[2][cellIndex].textContent === turn
+        ) {
+          hasWinner = true;
+        }
+        if (
+          rows[0][0].textContent === turn &&
+          rows[1][1].textContent === turn &&
+          rows[2][2].textContent === turn
+        ) {
+          hasWinner = true;
+        }
+        if (
+          rows[0][2].textContent === turn &&
+          rows[1][1].textContent === turn &&
+          rows[2][0].textContent === turn
+        ) {
+          hasWinner = true;
+        }
+        return hasWinner;
+      };
+
+      const callback = (e) => {
+        //e.stopPropagation();이벤트 버블링 방지
+        if (e.target.textContent !== "") {
+          console.log("빈칸이 아닙니다");
+          return;
+          //  e.currentTarget; $table이 클릭됨
+        }
+        e.target.textContent = turn;
+        if (checkWinner(e.target)) {
+          $result.textContent = `${turn}님의 승리!`;
+          $table.removeEventListener("click", callback);
+
+          return;
+        }
+        let draw = true;
+        rows.forEach((row) => {
+          row.forEach((cell) => {
+            if (!cell.textContent) {
+              draw = false;
+            }
+          });
+        });
+        if (draw) {
+          $result.textContent = "무승부";
+          return;
+        }
+        turn = turn === "O" ? "X" : "O";
+      };
+
       for (let i = 0; i < 3; i++) {
         const $tr = document.createElement("tr");
         $table.append($tr);
         const cells = [];
-
         for (let j = 0; j < 3; j++) {
           const $td = document.createElement("td");
           $tr.append($td);
           cells.push($td);
-          $td.addEventListener("click", (e) => {
-            if (e.target.textContent) return;
-            e.target.textContent = turn;
-            if (turn === "O") {
-              turn = "X";
-            } else if (turn === "X") {
-              turn = "O";
-            }
-          });
-          rows.push(cells);
+          // $td.addEventListener("click", callback);
         }
+        rows.push(cells);
       }
+      //이벤트 버블링:html 현상으로 이벤트가 부모도 따라서 실행됨
+      //<->이벤트 캡처링(팝업 닫을 때, 세 번째 인자 true)
+      $table.addEventListener("click", callback);
       body.append($table);
       body.append($result);
     </script>
