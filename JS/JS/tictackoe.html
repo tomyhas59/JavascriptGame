@@ -22,21 +22,23 @@
       const { body } = document;
 
       const $table = document.createElement("table");
-      const $result = document.createElement("result");
+      const $result = document.createElement("div");
       const rows = [];
       let turn = "O";
 
       const checkWinner = (target) => {
-        let rowIndex;
-        let cellIndex;
-        rows.forEach((row, ri) => {
-          row.forEach((cell, ci) => {
-            if (cell === target) {
-              rowIndex = ri;
-              cellIndex = ci;
-            }
-          });
-        });
+        const rowIndex = target.parentNode.rowIndex;
+        const cellIndex = target.cellIndex;
+        // let rowIndex;
+        // let cellIndex;
+        // rows.forEach((row, ri) => {
+        //   row.forEach((cell, ci) => {
+        //     if (cell === target) {
+        //       rowIndex = ri;
+        //       cellIndex = ci;
+        //     }
+        //   });
+        // });
         let hasWinner = false;
         if (
           rows[rowIndex][0].textContent === turn &&
@@ -69,7 +71,36 @@
         return hasWinner;
       };
 
+      const checkMatch = (target) => {
+        const hasWinner = checkWinner(target);
+        if (hasWinner) {
+          $result.textContent = `${turn}님의 승리!`;
+          $table.removeEventListener("click", callback);
+          return;
+        }
+
+        const draw = rows.flat().every((cell) => cell.textContent); //모두 존재하면 true
+        //rows.flat().some((v) => v.textContent); 하나라도 있으면 true
+
+        // rows.forEach((row) => {
+        //   row.forEach((cell) => {
+        //     if (!cell.textContent) {
+        //       draw = false;
+        //     }
+        //   });
+        // });
+        if (draw) {
+          $result.textContent = "무승부";
+          return;
+        }
+        turn = turn === "X" ? "O" : "X";
+      };
+
+      let clickable = true;
       const callback = (e) => {
+        if (!clickable) {
+          return;
+        }
         //e.stopPropagation();이벤트 버블링 방지
         if (e.target.textContent !== "") {
           console.log("빈칸이 아닙니다");
@@ -77,25 +108,20 @@
           //  e.currentTarget; $table이 클릭됨
         }
         e.target.textContent = turn;
-        if (checkWinner(e.target)) {
-          $result.textContent = `${turn}님의 승리!`;
-          $table.removeEventListener("click", callback);
 
-          return;
+        checkMatch(e.target);
+
+        if (turn === "X") {
+          const emptyCells = rows.flat().filter((v) => !v.textContent);
+          const randomCell =
+            emptyCells[Math.floor(Math.random() * emptyCells.length)];
+          clickable = false;
+          setTimeout(() => {
+            randomCell.textContent = "X";
+            checkMatch(randomCell);
+            clickable = true;
+          }, 1000);
         }
-        let draw = true;
-        rows.forEach((row) => {
-          row.forEach((cell) => {
-            if (!cell.textContent) {
-              draw = false;
-            }
-          });
-        });
-        if (draw) {
-          $result.textContent = "무승부";
-          return;
-        }
-        turn = turn === "O" ? "X" : "O";
       };
 
       for (let i = 0; i < 3; i++) {
