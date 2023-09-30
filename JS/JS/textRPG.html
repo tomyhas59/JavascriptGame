@@ -66,6 +66,14 @@
         hp: 100,
         xp: 0,
         att: 10,
+        attack(monster) {
+          monster.hp -= this.att; //func일 때 this=hero
+          this.hp -= monster.att;
+        },
+        heal(monster) {
+          this.hp = +20;
+          this.hp = monster.att;
+        },
       };
       let monster = null;
       const monsterList = [
@@ -132,6 +140,15 @@
         $monsterName.textContent = monster.name;
         $monsterHp.textContent = `HP:${monster.hp}/${monster.maxHp}`;
         $monsterAtt.textContent = `ATT:${monster.att}`;
+      });
+
+      document.querySelector("#attack").addEventListener("click", (e) => {
+        e.preventDefault();
+        hero.attack(monster);
+        monster.attack(hero);
+        $heroHp.textContent = `HP:${hero.hp}/${hero.maxHp}`;
+        $monsterHp.textContent = `HP:${monster.hp}/${monster.maxHp}`;
+        $message.textContent = `${hero.att}의 대미지를 주고 ${monster.att}의 대미지를 받았다`;
       });
     </script>
   </body>
