@@ -2,6 +2,7 @@ console.log(Math.floor(Math.random() * 9 + 1)); //0이상 10 이하
 //floor 내림
 //round 반올림
 //ceil  올림
+console.log(Math.min(30, 50, 100, 10)); //최솟값 리턴 10
 
 const numbers = [];
 for (let n = 0; n < 9; n = n + 1) {
