@@ -58,7 +58,10 @@
       const colors = ["red", "orange", "yellow", "green", "white", "pink"];
       let colorCopy = colors.concat(colors);
       let shuffled = [];
-
+      let clicked=[];
+      let completed=[];
+      let clickable= false;
+      
       function shuffle() {
         for (let i = 0; colorCopy.length > 0; i += 1) {
           const randomIndex = Math.floor(Math.random() * colorCopy.length);
@@ -81,25 +84,73 @@
         return card;
       }
 
+      function onClickCard(){
+        if(!clickable || completed.includes(this) || clicked[0] === this){
+          return;
+        }
+        this.classList.toggle("flipped");
+        clicked.push(this);
+        if(clicked.length !== 2){
+          return;
+        }
+        const firstBackColor=clicked[0].querySelector(".card-back").style.backgroundColor;
+        const secondBackColor=clicked[1].querySelector(".card-back").style.backgroundColor;
+
+        if(firstBackColor === secondBackColor){
+          completed = completed.concat(clicked);
+          clicked=[]
+          if(completed.length !== total){
+            return;
+          }
+          setTimeout(()=>{
+             alert("축하합니다");
+            resetGame();
+          }, 1000)
+         
+          return;
+        }
+         clickable=false;
+        setTimeout(()=>{
+           clicked[0].classList.remove("flipped");
+            clicked[1].classList.remove("flipped");
+            
+        clicked=[];
+           clickable=true;
+        } , 500);
+       }
+    
       function startGame() {
-        clickable = false;
+       clickable=false;
         shuffle();
         for (let i = 0; i < total; i += 1) {
           const card = createCard(i);
+          card.addEventListener("click", onClickCard);
           $wrapper.appendChild(card);
         }
         document.querySelectorAll(".card").forEach((card, index) => {
           setTimeout(() => {
             card.classList.add("flipped");
-
-            setTimeout(() => {
-              card.classList.remove("flipped");
-            }, 5000); // 5초 후에 다시 닫음
           }, 1000 + 100 * index);
         });
+
+         setTimeout(() => {
+           document.querySelectorAll(".card").forEach((card)=>   {
+             card.classList.remove("flipped");
+            }); 
+         clickable= true;
+        },5000);
       }
 
       startGame();
+      
+      function resetGame(){
+        $wrapper.innerHTML = ""; 
+        colorCopy = colors.concat(colors);
+        shuffled = [];
+        completed=[];
+         startGame();
+      }
+      
     </script>
   </body>
 </html>
