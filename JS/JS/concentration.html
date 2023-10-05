@@ -54,14 +54,35 @@
     <script>
       const $wrapper = document.querySelector("#wrapper");
 
-      const total = 12;
-      const colors = ["red", "orange", "yellow", "green", "white", "pink"];
-      let colorCopy = colors.concat(colors);
+      const total = parseInt(prompt("카드 개수를 입력하세요(최대 20)"));
+      const colors = [
+        "red",
+        "orange",
+        "yellow",
+        "green",
+        "white",
+        "pink",
+        "cyan",
+        "violet",
+        "gray",
+        "black",
+      ];
+
+      let randomColors = [];
+
+      while (colors.length > 0) {
+        const random = Math.floor(Math.random() * colors.length);
+        randomColors = randomColors.concat(colors.splice(random, 1));
+      }
+
+      let colorSlice = randomColors.slice(0, total / 2);
+      let colorCopy = colorSlice.concat(colorSlice);
       let shuffled = [];
-      let clicked=[];
-      let completed=[];
-      let clickable= false;
-      
+      let clicked = [];
+      let completed = [];
+      let clickable = false;
+      let startTime;
+
       function shuffle() {
         for (let i = 0; colorCopy.length > 0; i += 1) {
           const randomIndex = Math.floor(Math.random() * colorCopy.length);
@@ -84,43 +105,47 @@
         return card;
       }
 
-      function onClickCard(){
-        if(!clickable || completed.includes(this) || clicked[0] === this){
+      function onClickCard() {
+        if (!clickable || completed.includes(this) || clicked[0] === this) {
           return;
         }
+
         this.classList.toggle("flipped");
         clicked.push(this);
-        if(clicked.length !== 2){
+        if (clicked.length !== 2) {
           return;
         }
-        const firstBackColor=clicked[0].querySelector(".card-back").style.backgroundColor;
-        const secondBackColor=clicked[1].querySelector(".card-back").style.backgroundColor;
+        const firstBackColor =
+          clicked[0].querySelector(".card-back").style.backgroundColor;
+        const secondBackColor =
+          clicked[1].querySelector(".card-back").style.backgroundColor;
 
-        if(firstBackColor === secondBackColor){
+        if (firstBackColor === secondBackColor) {
           completed = completed.concat(clicked);
-          clicked=[]
-          if(completed.length !== total){
+          clicked = [];
+          if (completed.length !== total) {
             return;
           }
-          setTimeout(()=>{
-             alert("축하합니다");
+          const endTime = new Date();
+          setTimeout(() => {
+            alert(`축하합니다 ${(endTime - startTime) / 1000}초 `);
             resetGame();
-          }, 1000)
-         
+          }, 1000);
+
           return;
         }
-         clickable=false;
-        setTimeout(()=>{
-           clicked[0].classList.remove("flipped");
-            clicked[1].classList.remove("flipped");
-            
-        clicked=[];
-           clickable=true;
-        } , 500);
-       }
-    
+        clickable = false;
+        setTimeout(() => {
+          clicked[0].classList.remove("flipped");
+          clicked[1].classList.remove("flipped");
+
+          clicked = [];
+          clickable = true;
+        }, 500);
+      }
+
       function startGame() {
-       clickable=false;
+        clickable = false;
         shuffle();
         for (let i = 0; i < total; i += 1) {
           const card = createCard(i);
@@ -133,24 +158,23 @@
           }, 1000 + 100 * index);
         });
 
-         setTimeout(() => {
-           document.querySelectorAll(".card").forEach((card)=>   {
-             card.classList.remove("flipped");
-            }); 
-         clickable= true;
-        },5000);
+        setTimeout(() => {
+          document.querySelectorAll(".card").forEach((card) => {
+            card.classList.remove("flipped");
+          });
+          clickable = true;
+          startTime = new Date();
+        }, 5000);
       }
-
       startGame();
-      
-      function resetGame(){
-        $wrapper.innerHTML = ""; 
-        colorCopy = colors.concat(colors);
+
+      function resetGame() {
+        $wrapper.innerHTML = "";
+        colorCopy = colorSlice.concat(colorSlice);
         shuffled = [];
-        completed=[];
-         startGame();
+        completed = [];
+        startGame();
       }
-      
     </script>
   </body>
 </html>
