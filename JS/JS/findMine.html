@@ -80,6 +80,71 @@
         return data;
       };
 
+      const countMine = (rowIndex, cellIndex) => {
+        const mines = [CODE.MINE, CODE.QUESTION_MINE, CODE.FLAG_MINE];
+        let i = 0;
+        mines.includes(data[rowIndex - 1]?.[cellIndex - 1]) && i++;
+        mines.includes(data[rowIndex - 1]?.[cellIndex]) && i++;
+        mines.includes(data[rowIndex - 1]?.[cellIndex + 1]) && i++;
+        mines.includes(data[rowIndex][cellIndex - 1]) && i++;
+        mines.includes(data[rowIndex][cellIndex + 1]) && i++;
+        mines.includes(data[rowIndex + 1]?.[cellIndex - 1]) && i++;
+        mines.includes(data[rowIndex + 1]?.[cellIndex]) && i++;
+        mines.includes(data[rowIndex + 1]?.[cellIndex + 1]) && i++;
+        return i;
+      };
+
+      const onLeftClick = (e) => {
+        const target = e.target; //우클릭이 발생하는 곳 td
+        const rowIndex = target.parentNode /*=tr*/.rowIndex;
+        const cellIndex = target.cellIndex;
+        const cellData = data[rowIndex][cellIndex];
+        if (cellData === CODE.NORMAL) {
+          const count = countMine(rowIndex, cellIndex);
+          target.className = "opened";
+          target.textContent = count || "";
+          data[rowIndex][cellIndex] = count;
+        } else if (cellData === CODE.MINE) {
+          target.textContent = "●";
+          target.className = "opened";
+          $tbody.removeEventListener("contextmenu", onRightClick);
+          $tbody.removeEventListener("click", onLeftClick);
+        }
+      };
+
+      const onRightClick = (e) => {
+        e.preventDefault();
+        const target = e.target; //우클릭이 발생하는 곳 td
+        const rowIndex = target.parentNode /*=tr*/.rowIndex;
+        const cellIndex = target.cellIndex;
+        const cellData = data[rowIndex][cellIndex];
+        if (cellData === CODE.MINE) {
+          data[rowIndex][cellIndex] = CODE.QUESTION_MINE;
+          target.className = "question";
+          target.textContent = "?";
+        } else if (cellData === CODE.QUESTION_MINE) {
+          data[rowIndex][cellIndex] = CODE.FLAG_MINE;
+          target.className = "flag";
+          target.textContent = "!";
+        } else if (cellData === CODE.FLAG_MINE) {
+          data[rowIndex][cellIndex] = CODE.MINE;
+          target.className = "";
+          target.textContent = "X";
+          //----------------------------------
+        } else if (cellData === CODE.NORMAL) {
+          data[rowIndex][cellIndex] = CODE.QUESTION;
+          target.className = "question";
+          target.textContent = "?";
+        } else if (cellData === CODE.QUESTION) {
+          data[rowIndex][cellIndex] = CODE.FLAG;
+          target.className = "flag";
+          target.textContent = "!";
+        } else if (cellData === CODE.FLAG) {
+          data[rowIndex][cellIndex] = CODE.NORMAL;
+          target.className = "";
+          target.textContent = "";
+        }
+      };
       const drawTable = () => {
         data = plantMine();
         data.forEach((row) => {
@@ -92,6 +157,8 @@
               $td.textContent = "X";
             }
           });
+          $tbody.addEventListener("contextmenu", onRightClick);
+          $tbody.addEventListener("click", onLeftClick);
         });
       };
       drawTable();
