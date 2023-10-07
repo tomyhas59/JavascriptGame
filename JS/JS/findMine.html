@@ -28,17 +28,26 @@
     </style>
   </head>
   <body>
+    <form id="form">
+      <input id="row" size="5" />
+      <input id="cell" size="5" />
+      <input id="mine" size="5" />
+      <button>생성</button>
+    </form>
+    <div id="timer"></div>
     <table id="table">
       <tbody></tbody>
     </table>
     <div id="result"></div>
     <script>
+      const $form = document.querySelector("#form");
+      const $timer = document.querySelector("#timer");
       const $result = document.querySelector("#result");
       const $tbody = document.querySelector("#table tbody");
 
-      const row = 10;
-      const cell = 10;
-      const mine = 10;
+      let row;
+      let cell;
+      let mine;
       const CODE = {
         NORMAL: -1, //닫힌 칸 지뢰 없음
         QUESTION: -2,
@@ -49,6 +58,26 @@
         OPENED: 0, //0 이상이면 다 열린 칸
       };
       let data;
+      let openCount;
+      let startTime;
+      let interval;
+
+      const onSubmit = (e) => {
+        e.preventDefault();
+        row = parseInt(e.target.row.value);
+        cell = parseInt(e.target.cell.value);
+        mine = parseInt(e.target.mine.value);
+        openCount = 0;
+        clearInterval(interval);
+        $tbody.innerHTML = "";
+        drawTable();
+        startTime = new Date();
+        interval = setInterval(() => {
+          const time = Math.floor((new Date() - startTime) / 1000);
+          $timer.textContent = `${time}초`;
+        }, 1000);
+      };
+      $form.addEventListener("submit", onSubmit);
 
       const plantMine = () => {
         const candidate = Array(row * cell)
@@ -94,19 +123,60 @@
         return i;
       };
 
+      const open = (rowIndex, cellIndex) => {
+        if (data[rowIndex]?.[cellIndex] >= CODE.OPENED) return;
+        const target = $tbody.children[rowIndex]?.children[cellIndex];
+        if (!target) {
+          return;
+        }
+        const count = countMine(rowIndex, cellIndex);
+        target.textContent = count || "";
+        target.className = "opened";
+        data[rowIndex][cellIndex] = count;
+        openCount++;
+        console.log(openCount);
+        if (openCount === row * cell - mine) {
+          const time = Math.floor((new Date() - startTime) / 1000);
+          clearInterval(interval);
+          $tbody.removeEventListener("contextmenu", onRightClick);
+          $tbody.removeEventListener("click", onLeftClick);
+          setTimeout(() => {
+            alert(`승리했습니다! ${time}초가 걸렸습니다`);
+          }, 500);
+        }
+        return count;
+      };
+
+      const openAround = (rI, cI) => {
+        setTimeout(() => {
+          const count = open(rI, cI);
+          if (count === 0) {
+            openAround(rI - 1, cI - 1);
+            openAround(rI - 1, cI);
+            openAround(rI - 1, cI + 1);
+            openAround(rI, cI - 1);
+            openAround(rI, cI + 1);
+            openAround(rI + 1, cI - 1);
+            openAround(rI + 1, cI);
+            openAround(rI + 1, cI + 1);
+          }
+        }, 0);
+      };
+
       const onLeftClick = (e) => {
         const target = e.target; //우클릭이 발생하는 곳 td
         const rowIndex = target.parentNode /*=tr*/.rowIndex;
         const cellIndex = target.cellIndex;
         const cellData = data[rowIndex][cellIndex];
         if (cellData === CODE.NORMAL) {
-          const count = countMine(rowIndex, cellIndex);
-          target.className = "opened";
-          target.textContent = count || "";
-          data[rowIndex][cellIndex] = count;
+          openAround(rowIndex, cellIndex);
         } else if (cellData === CODE.MINE) {
           target.textContent = "●";
           target.className = "opened";
+          setTimeout(() => {
+            alert("실패!");
+          }, 500);
+          clearInterval(interval);
           $tbody.removeEventListener("contextmenu", onRightClick);
           $tbody.removeEventListener("click", onLeftClick);
         }
@@ -129,7 +199,7 @@
         } else if (cellData === CODE.FLAG_MINE) {
           data[rowIndex][cellIndex] = CODE.MINE;
           target.className = "";
-          target.textContent = "X";
+          //  target.textContent = "X";
           //----------------------------------
         } else if (cellData === CODE.NORMAL) {
           data[rowIndex][cellIndex] = CODE.QUESTION;
@@ -154,14 +224,13 @@
             const $td = document.createElement("td");
             $tr.append($td);
             if (cell === CODE.MINE) {
-              $td.textContent = "X";
+              //  $td.textContent  "X";
             }
           });
           $tbody.addEventListener("contextmenu", onRightClick);
           $tbody.addEventListener("click", onLeftClick);
         });
       };
-      drawTable();
     </script>
   </body>
 </html>
