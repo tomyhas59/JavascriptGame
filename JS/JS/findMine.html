@@ -71,6 +71,7 @@
         clearInterval(interval);
         $tbody.innerHTML = "";
         drawTable();
+        firstClick = true;
         startTime = new Date();
         interval = setInterval(() => {
           const time = Math.floor((new Date() - startTime) / 1000);
@@ -163,14 +164,62 @@
         }, 0);
       };
 
+      let normalCellFound = false;
+      let searched;
+      let firstClick = true;
+
+      const transferMine = (rI, cI) => {
+        if (normalCellFound) return;
+        if (rI < 0 || rI >= row || cI < 0 || cI >= cell) return;
+        if (searched[rI][cI]) return;
+        if (data[rI]?.[cI] === CODE.NORMAL) {
+          normalCellFound = true;
+          data[rI][cI] = CODE.MINE;
+        } else {
+          searched[rI][cI] = true;
+          transferMine(rI - 1, cI - 1);
+          transferMine(rI - 1, cI);
+          transferMine(rI - 1, cI + 1);
+          transferMine(rI, cI - 1);
+          transferMine(rI, cI + 1);
+          transferMine(rI + 1, cI - 1);
+          transferMine(rI + 1, cI);
+          transferMine(rI + 1, cI + 1);
+        }
+      };
+
+      const showMine = () => {
+        const mines = [CODE.MINE, CODE.QUESTION_MINE, CODE.FLAG_MINE];
+        data.forEach((row, rowIndex) => {
+          row.forEach((cell, cellIndex) => {
+            if (mines.includes(cell)) {
+              $tbody.children[rowIndex].children[cellIndex].textContent = "X";
+            }
+          });
+        });
+      };
+
       const onLeftClick = (e) => {
         const target = e.target; //우클릭이 발생하는 곳 td
         const rowIndex = target.parentNode /*=tr*/.rowIndex;
         const cellIndex = target.cellIndex;
         const cellData = data[rowIndex][cellIndex];
+        if (firstClick) {
+          firstClick = false;
+          searched = Array(row)
+            .fill()
+            .map(() => []);
+          if (cellData === CODE.MINE) {
+            //지뢰면
+            transferMine(rowIndex, cellIndex); //지뢰 옮기기
+            data[rowIndex][cellIndex] = CODE.NORMAL; //지금 칸을 빈칸으로
+            cellData = CODE.NORMAL;
+          }
+        }
         if (cellData === CODE.NORMAL) {
           openAround(rowIndex, cellIndex);
         } else if (cellData === CODE.MINE) {
+          showMine();
           target.textContent = "●";
           target.className = "opened";
           setTimeout(() => {
@@ -199,7 +248,7 @@
         } else if (cellData === CODE.FLAG_MINE) {
           data[rowIndex][cellIndex] = CODE.MINE;
           target.className = "";
-          //  target.textContent = "X";
+          // target.textContent = "X";
           //----------------------------------
         } else if (cellData === CODE.NORMAL) {
           data[rowIndex][cellIndex] = CODE.QUESTION;
@@ -224,7 +273,7 @@
             const $td = document.createElement("td");
             $tr.append($td);
             if (cell === CODE.MINE) {
-              //  $td.textContent  "X";
+              // $td.textContent = "X";
             }
           });
           $tbody.addEventListener("contextmenu", onRightClick);
