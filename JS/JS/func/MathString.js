@@ -28,3 +28,5 @@ const split = "1234";
 console.log(split.split()); //배열로 바꿔줌 [ '1234' ]
 console.log(split.split("")); //[ '1', '2', '3', '4' ]
 console.log(split.split("3")); //3을 기준으로 나뉨[ '12', '4' ]
+
+console.log(Math.abs(-13)); //절대값 13
