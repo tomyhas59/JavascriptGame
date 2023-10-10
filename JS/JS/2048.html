@@ -69,11 +69,21 @@
   <body>
     <table id="table"></table>
     <div id="score">0</div>
+    <button id="back">뒤로</button>
     <script>
       const $table = document.querySelector("#table");
       const $score = document.querySelector("#score");
+      const $back = document.querySelector("#back");
       let data = [];
+      const history = [];
 
+      $back.addEventListener("click", () => {
+        const prevData = history.pop();
+        if (!prevData) return;
+        $score.textContent = prevData.score;
+        data = prevData.table;
+        draw();
+      });
       //$table -> $fragment -> $tr -> $td
       function startGame() {
         const $fragment = document.createDocumentFragment();
@@ -134,6 +144,10 @@
       // draw();
 
       function moveCells(direction) {
+        history.push({
+          table: JSON.parse(JSON.stringify(data)),
+          score: $score.textContent,
+        });
         switch (direction) {
           case "left": {
             const newData = [[], [], [], []];
@@ -257,7 +271,7 @@
         }
       }
 
-      window.addEventListener("keyup", (e) => {
+      window.addEventListener("keydown", (e) => {
         if (e.key === "ArrowUp") {
           moveCells("up");
         } else if (e.key === "ArrowDown") {
